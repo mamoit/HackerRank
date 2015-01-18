@@ -29,6 +29,9 @@ class Node:
     def getNextNodes(self):
         return self.next
 
+    def setNextNode(self, nextNode):
+        self.next = [nextNode]
+
     def getNum(self):
         return self.num
 
@@ -59,38 +62,39 @@ def run():
 
 def merge(start1, start2, end):
     # FIXME implement
+    current = None
+
+    while start1 != end or start2 != end:
+        if start1.getNum() < start2.getNum():
+            if current is not None:
+                current.setNextNode(start1)
+            current = start1
+            start1 = start1.getNextNodes()[0]
+        else:
+            if current is not None:
+                current.setNextNode(start2)
+            current = start2
+            start2 = start2.getNextNodes()[0]
 
     # Remove this branch if it doesn't have more upstreams
     if (end.getPrevCount() == 0):
         del toMerge[end]
-        return False
-    else:
-        return True
 
 
 def runBranch(start):
     current = start
 
     while current is not None:
-        print("# checking {} - count {}".format(current.getNum(),
-              current.getPrevCount()))
         current.decPrevCount()
         if current in toMerge:
             merge(start, toMerge[current], current)
         if current.getPrevCount() > 0:
             toMerge[current] = start
-            print("{} - {} # {}".format(current.getNum(), start.getNum(),
-                  current.getPrevCount()))
             return
 
         nextNodes = current.getNextNodes()
 
         if len(nextNodes) == 0:
-            if start == end:
-                return
-            else:
-                # FIXME handle end that needs to be merged
-                pass
             return
         elif len(nextNodes) == 1:
             current = nextNodes[0]
@@ -121,13 +125,10 @@ for line in sys.stdin:
     addSequence(sequence)
     discard = True
 
+# ACTUAL ALGORITHM
 run()
 
-for node in nodes:
-    print(nodes[node].getNum())
-
-# ACTUAL ALGORITHM
-nodes[edge[0]].scan(None)
-
 # OUTPUT
-print(removed)
+for node in nodes:
+    for a in nodes[node].getNextNodes():
+        print("{} -> {}".format(nodes[node].getNum(), a.getNum()))
