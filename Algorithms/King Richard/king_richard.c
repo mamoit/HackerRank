@@ -17,34 +17,6 @@ typedef struct Square {
     int n;
 }Square;
 
-void rotate(Coord* c, Square* square) {
-    int buff;
-    switch (square->n) {
-        case 0:
-            buff = c->l;
-            c->l = c->c - square->c + square->l;
-            c->c = square->w - buff + square->l + square->c;
-            break;
-        case 1:
-            c->l = square->w - c->l + 2*square->l;
-            c->c = square->w - c->c + 2*square->c;
-            break;
-        case 2:
-            buff = c->l;
-            c->l = square->w - c->c + square->c + square->l;
-            c->c = buff - square->l + square->c;
-            break;
-    }
-}
-
-bool in_square(Coord* c, Square* square) {
-    if(c->l >= square->l && c->l <= square->l1 && \
-       c->c >= square->c && c->c <= square->c1) {
-        return true;
-    }
-    return false;
-}
-
 bool compare_square(Square* s1, Square* s2) {
     if( s1->l != s2->l ||\
         s1->c != s2->c ||\
@@ -64,6 +36,8 @@ int main() {
 
     unsigned long int current_knight = ULONG_MAX;
     Coord knight_coord;
+
+    int buff;
 
     scanf("%d\n", &N);
 
@@ -107,10 +81,28 @@ int main() {
         knight_coord.c = current_knight % N + 1;
 
         for(int j=0; j<=current_square; j++) {
-            if(!in_square(&knight_coord, R[j])) {
+            if(knight_coord.l < R[j]->l || knight_coord.l > R[j]->l1 || \
+               knight_coord.c < R[j]->c || knight_coord.c > R[j]->c1) {
                 break;
+            } else {
+                //rotate(&knight_coord, R[j]);
+                switch (R[j]->n) {
+                    case 0:
+                        buff = knight_coord.l;
+                        knight_coord.l = knight_coord.c - R[j]->c + R[j]->l;
+                        knight_coord.c = R[j]->w - buff + R[j]->l + R[j]->c;
+                        break;
+                    case 1:
+                        knight_coord.l = R[j]->w - knight_coord.l + 2*R[j]->l;
+                        knight_coord.c = R[j]->w - knight_coord.c + 2*R[j]->c;
+                        break;
+                    case 2:
+                        buff = knight_coord.l;
+                        knight_coord.l = R[j]->w - knight_coord.c + R[j]->c + R[j]->l;
+                        knight_coord.c = buff - R[j]->l + R[j]->c;
+                        break;
+                }
             }
-            rotate(&knight_coord, R[j]);
         }
         printf("%d %d\n", knight_coord.l, knight_coord.c);
     }
