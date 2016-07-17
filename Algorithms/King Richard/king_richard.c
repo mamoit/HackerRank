@@ -15,35 +15,35 @@ typedef struct Square {
     int n;
 }Square;
 
-Coord rotate(Coord c, Square* square) {
-    Coord newCoord;
-    int rotation = square->n % 4;
-    switch (rotation) {
+void rotate(Coord* c, Square* square) {
+    Coord c_orig;
+    switch (square->n) {
         case 0:
-            newCoord.l = c.c - square->c + square->l;
-            newCoord.c = c.l - square->l + square->c;
-            newCoord.c = square->w - newCoord.c + 2*square->c;
+            c_orig.l = c->l;
+            c_orig.c = c->c;
+            c->l = c_orig.c - square->c + square->l;
+            c->c = square->w - c_orig.l + square->l + square->c;
             break;
         case 1:
-            newCoord.l = square->w - c.l + 2*square->l;
-            newCoord.c = square->w - c.c + 2*square->c;
+            c_orig.l = c->l;
+            c_orig.c = c->c;
+            c->l = square->w - c_orig.l + 2*square->l;
+            c->c = square->w - c_orig.c + 2*square->c;
             break;
         case 2:
-            newCoord.l = c.c - square->c + square->l;
-            newCoord.c = c.l - square->l + square->c;
-            newCoord.l = square->w - newCoord.l + 2*square->l;
+            c_orig.l = c->l;
+            c_orig.c = c->c;
+            c->l = square->w - c_orig.c + square->c + square->l;
+            c->c = c_orig.l - square->l + square->c;
             break;
         case 3:
-            newCoord.l = c.l;
-            newCoord.c = c.c;
             break;
     }
-    return newCoord;
 }
 
-bool in_square(Coord c, Square* square) {
-    if((c.l >= square->l && c.l <= square->l + square->w) && \
-       (c.c >= square->c && c.c <= square->c + square->w)) {
+bool in_square(Coord* c, Square* square) {
+    if((c->l >= square->l && c->l <= square->l + square->w) && \
+       (c->c >= square->c && c->c <= square->c + square->w)) {
         return true;
     }
     return false;
@@ -92,10 +92,12 @@ int main() {
             free(square_buff);
         } else {
             /* The current square is a new one */
+            R[current_square]->n %= 4;
             current_square++;
             R[current_square] = square_buff;
         }
     }
+    R[current_square]->n %= 4;
 
     scanf("%d\n", &L);
 
@@ -104,11 +106,11 @@ int main() {
         knight_coord.l = current_knight / N + 1;
         knight_coord.c = current_knight % N + 1;
 
-        for(int i=0; i<=current_square; i++) {
-            if(!in_square(knight_coord, R[i])) {
+        for(int j=0; j<=current_square; j++) {
+            if(!in_square(&knight_coord, R[j])) {
                 break;
             }
-            knight_coord = rotate(knight_coord, R[i]);
+            rotate(&knight_coord, R[j]);
         }
         printf("%d %d\n", knight_coord.l, knight_coord.c);
     }
