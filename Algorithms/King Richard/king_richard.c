@@ -12,6 +12,8 @@ typedef struct Square {
     int l;
     int c;
     int w;
+    int l1;
+    int c1;
     int n;
 }Square;
 
@@ -32,14 +34,12 @@ void rotate(Coord* c, Square* square) {
             c->l = square->w - c->c + square->c + square->l;
             c->c = buff - square->l + square->c;
             break;
-        case 3:
-            break;
     }
 }
 
 bool in_square(Coord* c, Square* square) {
-    if((c->l >= square->l && c->l <= square->l + square->w) && \
-       (c->c >= square->c && c->c <= square->c + square->w)) {
+    if(c->l >= square->l && c->l <= square->l1 && \
+       c->c >= square->c && c->c <= square->c1) {
         return true;
     }
     return false;
@@ -81,6 +81,8 @@ int main() {
         if(current_square <  0) {
             /* There is no square defined yet */
             current_square = 0;
+            square_buff->l1 = square_buff->l + square_buff->w;
+            square_buff->c1 = square_buff->c + square_buff->w;
             R[current_square] = square_buff;
         } else if (compare_square(square_buff, R[current_square])) {
             /* The current square is equal to the previous one */
@@ -90,6 +92,8 @@ int main() {
             /* The current square is a new one */
             R[current_square]->n %= 4;
             current_square++;
+            square_buff->l1 = square_buff->l + square_buff->w;
+            square_buff->c1 = square_buff->c + square_buff->w;
             R[current_square] = square_buff;
         }
     }
