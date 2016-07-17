@@ -16,25 +16,21 @@ typedef struct Square {
 }Square;
 
 void rotate(Coord* c, Square* square) {
-    Coord c_orig;
+    int buff;
     switch (square->n) {
         case 0:
-            c_orig.l = c->l;
-            c_orig.c = c->c;
-            c->l = c_orig.c - square->c + square->l;
-            c->c = square->w - c_orig.l + square->l + square->c;
+            buff = c->l;
+            c->l = c->c - square->c + square->l;
+            c->c = square->w - buff + square->l + square->c;
             break;
         case 1:
-            c_orig.l = c->l;
-            c_orig.c = c->c;
-            c->l = square->w - c_orig.l + 2*square->l;
-            c->c = square->w - c_orig.c + 2*square->c;
+            c->l = square->w - c->l + 2*square->l;
+            c->c = square->w - c->c + 2*square->c;
             break;
         case 2:
-            c_orig.l = c->l;
-            c_orig.c = c->c;
-            c->l = square->w - c_orig.c + square->c + square->l;
-            c->c = c_orig.l - square->l + square->c;
+            buff = c->l;
+            c->l = square->w - c->c + square->c + square->l;
+            c->c = buff - square->l + square->c;
             break;
         case 3:
             break;
